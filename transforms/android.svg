@@ -1,0 +1,14 @@
+{%
+o.xp = Math.round((o.width * 5/128) / 2) * 2;
+o.yp = Math.round((o.height * 5/128) / 2) * 2;
+o.w = o.width + (o.xp * 2);
+o.h = o.height + (o.yp * 2);
+%}
+<svg width="{%=o.w%}" height="{%=o.h%}" viewBox="0 0 {%=o.w%} {%=o.h%}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink= "http://www.w3.org/1999/xlink">
+	<defs>
+		<clipPath id="rounded-rect">
+			<rect x="{%=o.xp%}" y="{%=o.yp%}" width="{%=o.width%}" height="{%=o.height%}" rx="{%=o.width / 16%}" ry="{%=o.height / 16%}"/>
+		</clipPath>
+	</defs>
+	<image xlink:href="{%=o.image%}" x="{%=o.xp%}" y="{%=o.yp%}" height="{%=o.height%}" width="{%=o.width%}" clip-path="url(#rounded-rect)" />
+</svg>
