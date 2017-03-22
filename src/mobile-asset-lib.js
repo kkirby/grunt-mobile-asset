@@ -72,7 +72,7 @@ function ParseConfig(config,parentConfig = {}){
 		resize: 'fill',
 		resizeFlags: '',
 		backgroundColor: 'transparent',
-		gravity: 'center',
+		gravity: 'Center',
 		...parentConfig,
 		...config
 	};
