@@ -70,6 +70,7 @@ function ParseConfig(config,parentConfig = {}){
 	let bundle = {
 		scale: 1,
 		resize: 'fill',
+		resizeFlags: '',
 		backgroundColor: 'transparent',
 		gravity: 'center',
 		...parentConfig,
@@ -99,7 +100,7 @@ function ParseConfig(config,parentConfig = {}){
 let uniqid = 0;
 async function ProcessIcon(iconName,config,outputFolder,gmConfig){
 	uniqid++;
-	let {scale,type,name,width,height,resize,backgroundColor,gravity} = config;
+	let {scale,type,name,width,height,resize,resizeFlags,backgroundColor,gravity} = config;
 	let tempIconName = path.join(os.tmpdir(),'_icon'+uniqid+'.png');
 	fs.writeFileSync(tempIconName,fs.readFileSync(iconName));
 	iconName = tempIconName;
@@ -130,7 +131,7 @@ async function ProcessIcon(iconName,config,outputFolder,gmConfig){
 		fill: '^',
 		exact: '!',
 		fit: '',
-	}[resize];
+	}[resize] + resizeFlags;
 	iconInstance
 		.background(backgroundColor)
 		.resize(width * scale,height * scale,resizeFlag)
