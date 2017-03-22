@@ -51,39 +51,32 @@ export default {
 	},
 	launch: {
 		android: {
-			name: "launch-%width%-%height%",
 			type: "png",
 			extend: [
-				{
-					width: 320,
-					height: 480
-				}
+				{ name: 'land-hdpi', width: 800, height: 480 },
+				{ name: 'land-ldpi', width: 320, height: 200 },
+				{ name: 'land-mdpi', width: 480, height: 320 },
+				{ name: 'land-xhdpi', width: 1280, height: 720 },
+				{ name: 'port-hdpi', width: 480, height: 800 },
+				{ name: 'port-ldpi', width: 200, height: 320 },
+				{ name: 'port-mdpi', width: 320, height: 480 },
+				{ name: 'port-xhdpi', width: 720, height: 1280 }
 			]
 		},
 		ios: {
 			type: 'png',
-			extend: do {
-				`
-					Default-568h@2x~iphone            640x1136
-					Default-667h                      750x1334
-					Default-736h                      1242x2208
-					Default-Landscape-736h            2208x1242
-					Default-Landscape@2x~ipad         2048x1536
-					Default-Landscape~ipad            1024x768
-					Default-Portrait@2x~ipad          1536x2048
-					Default-Portrait~ipad             768x1024
-					Default@2x~iphone                 640x960
-					Default~iphone                    320x480
-				`.trim().split('\n').map(file => {
-					let [name,size] = file.trim().split(/\s+/)
-					let [width,height] = size.split('x').map(int => parseInt(int,10));
-					return {
-						name,
-						width,
-						height
-					}
-				});
-			}
+			extend: [
+				{ name: 'Default-568h@2x~iphone', width: 640, height: 1136 },
+				{ name: 'Default-667h', width: 750, height: 1334 },
+				{ name: 'Default-736h', width: 1242, height: 2208 },
+				{ name: 'Default-Landscape-736h', width: 2208, height: 1242 },
+				{ name: 'Default-Landscape@2x~ipad', width: 2048, height: 1536 },
+				{ name: 'Default-Landscape~ipad', width: 1024, height: 768 },
+				{ name: 'Default-Portrait@2x~ipad', width: 1536, height: 2048 },
+				{ name: 'Default-Portrait~ipad', width: 768, height: 1024 },
+				{ name: 'Default@2x~iphone', width: 640, height: 960 },
+				{ name: 'Default~iphone', width: 320, height: 480 }
+			]
 		}
 	}
 };
