@@ -1,7 +1,7 @@
 {
   "name": "grunt-mobile-asset",
   "description": "A plugin that generates mobile assets, such as icons.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": {
     "name": "Kyle Kirbatski",
     "email": "kylekirby@optimalconnection.net"
