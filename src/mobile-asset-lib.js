@@ -8,6 +8,7 @@ import DefaultSizes from './default-sizes';
 import regexEscape from './regex-escape';
 import Promise from 'bluebird';
 import tmpl from 'blueimp-tmpl';
+import imageSize from 'image-size';
 
 async function svg2png_shim(sourceFile,destFile){
 	fs.writeFileSync(destFile,await svg2png(fs.readFileSync(sourceFile)));
@@ -73,6 +74,8 @@ function ParseConfig(config,parentConfig = {}){
 		resizeFlags: '',
 		backgroundColor: 'transparent',
 		gravity: 'Center',
+		resizeWidth: null,
+		resizeHeight: null,
 		...parentConfig,
 		...config
 	};
@@ -98,9 +101,25 @@ function ParseConfig(config,parentConfig = {}){
 }
 
 let uniqid = 0;
+
+let imageCache = (() => {
+	const CACHE = {};
+		
+	return function(name,fn){
+		if(typeof CACHE[name] == 'undefined'){
+			CACHE[name] = fn();
+		}
+		return CACHE[name];
+	}
+})();
+
 async function ProcessIcon(iconName,config,outputFolder,gmConfig){
 	uniqid++;
-	let {scale,type,name,width,height,resize,resizeFlags,backgroundColor,gravity} = config;
+	let {scale,type,name,width,height,resize,resizeFlags,resizeWidth,resizeHeight,backgroundColor,gravity} = config;
+	let inputImageDimensions = imageCache(
+		iconName,
+		() => imageSize(iconName)
+	);
 	let tempIconName = path.join(os.tmpdir(),'_icon'+uniqid+'.png');
 	fs.writeFileSync(tempIconName,fs.readFileSync(iconName));
 	iconName = tempIconName;
@@ -118,7 +137,8 @@ async function ProcessIcon(iconName,config,outputFolder,gmConfig){
 					fs.readFileSync(transformFile).toString(),
 					{
 						image: 'data:image/png;base64,' + imageData,
-						...config
+						...config,
+						inputImageDimensions
 					}
 				)
 			);
@@ -132,9 +152,34 @@ async function ProcessIcon(iconName,config,outputFolder,gmConfig){
 		exact: '!',
 		fit: '',
 	}[resize] + resizeFlags;
+	var aspect = inputImageDimensions.width / inputImageDimensions.height;
+	
+	if(resizeWidth !== null){
+		if(typeof resizeWidth == 'string' && resizeWidth.indexOf('%') != -1){
+			resizeWidth = Math.round(width * ((parseInt(resizeWidth,10) * scale) / 100));
+		}
+		if(resizeHeight == null){
+			resizeHeight = Math.round(resizeWidth / aspect);
+		}
+	}
+	
+	if(resizeHeight !== null){
+		if(typeof resizeHeight == 'string' && resizeHeight.indexOf('%') != -1){
+			resizeHeight = Math.round(height * ((parseInt(resizeHeight,10) * scale) / 100));
+		}
+		if(resizeWidth == null){
+			resizeWidth = Math.round(resizeHeight * aspect);
+		}
+	}
+	
+	if(resizeWidth == null && resizeHeight == null){
+		resizeWidth = width;
+		resizeHeight = height;
+	}
+	
 	iconInstance
 		.background(backgroundColor)
-		.resize(width * scale,height * scale,resizeFlag)
+		.resize(resizeWidth * scale,resizeHeight * scale,resizeFlag)
 		.gravity(gravity)
 		.extent(width * scale,height * scale);
 	await Promise.promisify(mkdirp)(outputFolder);
